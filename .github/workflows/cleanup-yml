@@ -1,0 +1,17 @@
+# .github/workflows/cleanup.yml
+name: Cleanup Resources
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    uses: ./.github/workflows/login.yml
+    secrets: inherit
+
+  delete-resources:
+    runs-on: ubuntu-latest
+    needs: cleanup
+    steps:
+      - name: Delete Resource Group
+        run: az group delete --name rg-demo --yes --no-wait
