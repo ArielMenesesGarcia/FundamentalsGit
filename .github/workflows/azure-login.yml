@@ -1,11 +1,12 @@
-name: Test Azure OIDC Login
+# .github/workflows/azure-login.yml
+name: Azure Login + Infra Setup
 
 on:
-  workflow_call:
-  workflow_dispatch:
+  workflow_call:     # Permite que otros workflows lo invoquen
+  workflow_dispatch: # Permite lanzarlo manualmente desde Actions
 
 jobs:
-  auth-test:
+  infra-setup:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -22,5 +23,22 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Verify Azure CLI
-        run: az account show
+      - name: Create Resource Group
+        run: |
+          az group create --name rg-cicd-demo --location eastus
+
+      - name: Create App Service Plan (Free)
+        run: |
+          az appservice plan create \
+            --name plan-cicd-demo \
+            --resource-group rg-cicd-demo \
+            --sku F1 \
+            --is-linux
+
+      - name: Create Web App
+        run: |
+          az webapp create \
+            --name webapp-cicd-demo \
+            --resource-group rg-cicd-demo \
+            --plan plan-cicd-demo \
+            --runtime "DOTNET:8"

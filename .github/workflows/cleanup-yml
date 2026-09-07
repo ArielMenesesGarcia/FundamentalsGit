@@ -2,16 +2,27 @@
 name: Cleanup Resources
 
 on:
-  workflow_dispatch:
+  workflow_call:     # Permite que otros workflows lo invoquen
+  workflow_dispatch: # Permite lanzarlo manualmente desde Actions
 
 jobs:
   cleanup:
-    uses: ./.github/workflows/azure-login.yml
-    secrets: inherit
-
-  delete-resources:
     runs-on: ubuntu-latest
-    needs: cleanup
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure Login via OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
       - name: Delete Resource Group
-        run: az group delete --name rg-demo --yes --no-wait
+        run: |
+          az group delete --name rg-demo --yes --no-wait
