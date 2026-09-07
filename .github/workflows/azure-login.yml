@@ -26,6 +26,14 @@ jobs:
       - name: Create Resource Group
         run: az group create --name rg-func-demo --location eastus
 
+      - name: Create Storage Account
+        run: |
+          az storage account create \
+              --name funcstorageari123456 \
+              --resource-group rg-func-demo \
+              --location eastus \
+              --sku Standard_LRS
+
       - name: Create Function App (Consumption Plan)
         run: |
           az functionapp create \
@@ -34,4 +42,4 @@ jobs:
             --consumption-plan-location eastus \
             --runtime dotnet \
             --functions-version 4 \
-            --storage-account funcstorage$RANDOM
+            --storage-account funcstorageari123456
