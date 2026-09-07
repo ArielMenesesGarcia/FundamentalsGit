@@ -1,9 +1,9 @@
 # .github/workflows/azure-login.yml
-name: Azure Login + Infra Setup
+name: Azure Login + Function Setup
 
 on:
-  workflow_call:     # Permite que otros workflows lo invoquen
-  workflow_dispatch: # Permite lanzarlo manualmente desde Actions
+  workflow_call:
+  workflow_dispatch:
 
 jobs:
   infra-setup:
@@ -24,21 +24,14 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Create Resource Group
-        run: |
-          az group create --name rg-cicd-demo --location eastus
+        run: az group create --name rg-func-demo --location eastus
 
-      - name: Create App Service Plan (Free)
+      - name: Create Function App (Consumption Plan)
         run: |
-          az appservice plan create \
-            --name plan-cicd-demo \
-            --resource-group rg-cicd-demo \
-            --sku F1 \
-            --is-linux
-
-      - name: Create Web App
-        run: |
-          az webapp create \
-            --name webapp-cicd-demo \
-            --resource-group rg-cicd-demo \
-            --plan plan-cicd-demo \
-            --runtime "DOTNET:8"
+          az functionapp create \
+            --name func-demo-ariel \
+            --resource-group rg-func-demo \
+            --consumption-plan-location eastus \
+            --runtime dotnet \
+            --functions-version 4 \
+            --storage-account funcstorage$RANDOM
