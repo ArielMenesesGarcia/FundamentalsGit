@@ -25,4 +25,4 @@ jobs:
 
       - name: Delete Resource Group
         run: |
-          az group delete --name rg-demo --yes --no-wait
+          az group delete --name rg-func-demo --yes --no-wait
