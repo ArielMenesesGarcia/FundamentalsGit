@@ -6,7 +6,7 @@ on:
 
 jobs:
   cleanup:
-    uses: ./.github/workflows/login.yml
+    uses: ./.github/workflows/azure-login.yml
     secrets: inherit
 
   delete-resources:
